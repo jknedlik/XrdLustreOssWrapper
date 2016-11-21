@@ -18,10 +18,7 @@
 #include <ctype.h>
 #include <unistd.h>
 long uid;
-//#include <libcfs/libcfs.h>
-//#include <libcfs/libcfsutil.h>
 #include <lustre/lustreapi.h>
-//#include <lustre_ver.h>
 #include <lustre/lustre_user.h>
 #include "qsStruct.h"                   
 struct qsStruct getQuotaSpace(){
