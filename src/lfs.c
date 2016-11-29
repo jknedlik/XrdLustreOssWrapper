@@ -21,13 +21,13 @@ long uid;
 #include <lustre/lustreapi.h>
 #include <lustre/lustre_user.h>
 #include "qsStruct.h"                   
-struct qsStruct getQuotaSpace(){
+struct qsStruct getQuotaSpace(char* target ){
 struct if_quotactl quotacmd;
- memset(&quotacmd, 0, sizeof(quotacmd));
+memset(&quotacmd, 0, sizeof(quotacmd));
 quotacmd.qc_cmd=LUSTRE_Q_GETQUOTA;
 quotacmd.qc_type=GRPQUOTA;
 quotacmd.qc_id= getegid();
-llapi_quotactl("/lustre/nyx",&quotacmd);
+llapi_quotactl(target,&quotacmd);
 struct obd_dqblk dqb = quotacmd.qc_dqblk;
 struct qsStruct qs;
 qs.Curr=lustre_stoqb(dqb.dqb_curspace);

@@ -4,6 +4,7 @@
 #include <XrdOuc/XrdOucString.hh>
 #include <XrdOuc/XrdOucStream.hh>
 #include <xrootd/XrdVersion.hh>
+#include <stdexcept>
 #include <sys/quota.h>
 #include "LustreOss.hh"
 #include "qsStruct.h"
@@ -15,26 +16,53 @@ extern "C"
                          const char* config_fn,
                          const char* parms)
   {
-    LustreOss* Oss = new LustreOss(native_oss,Logger);
+    LustreOss* Oss = new LustreOss(native_oss,Logger,config_fn);
     return (XrdOss*) Oss;
   }
 }
 extern "C" {
-   struct qsStruct getQuotaSpace();
+   struct qsStruct getQuotaSpace(char* target);
 };
-LustreOss::LustreOss(XrdOss* native_oss,XrdSysLogger*logger):nativeOss(native_oss),log(logger)
+LustreOss::LustreOss(XrdOss* native_oss,XrdSysLogger*logger,const char* config_fn):nativeOss(native_oss),log(logger)
 {
-DEBUG("TEST")
-nativeOss->Init(log,"");
+    lustremount="";
+nativeOss->Init(log,config_fn);
+loadConfig(config_fn);
 }
+
 
 LustreOss::~LustreOss()
 {
 }
 
+void LustreOss::loadConfig(const char* filename){
+
+  XrdOucStream Config;
+  int cfgFD;
+  char *var, *configPath = 0;
+
+  if ((cfgFD = open(filename, O_RDONLY, 0)) < 0)
+  {
+    return ;
+  }
+  
+  Config.Attach(cfgFD);
+  while ((var = Config.GetMyFirstWord()))
+  {
+    if (strcmp(var, "LustreOss.lustremount") == 0)
+    {
+      var += 21;
+      lustremount = std::string(Config.GetWord());
+      break;
+    }
+  }
+    if(lustremount.empty())throw std::runtime_error("LustreOss.lustremount not set in configuration file");
+  Config.Close();
+}
+
 int LustreOss::StatVS(XrdOssVSInfo *sP, const char *sname, int updt){
-DEBUG("TEST")
-    struct qsStruct qs =getQuotaSpace();
+  char* buf=strdup(lustremount.c_str());
+    struct qsStruct qs =getQuotaSpace(buf);
     sP->Total=qs.Total;
     sP->Usage=qs.Curr;
     sP->LFree=sP->Free=sP->Total - sP->Usage;

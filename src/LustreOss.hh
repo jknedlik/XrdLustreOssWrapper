@@ -30,9 +30,8 @@
     class LustreOss : public XrdOss
 {
 public:
-    
   virtual int    StatVS(XrdOssVSInfo *sP, const char *sname=0, int updt=0);
-  LustreOss(XrdOss* native_oss,XrdSysLogger*);
+  LustreOss(XrdOss* native_oss,XrdSysLogger*,const char*);
   virtual ~LustreOss();
   XrdOssDF* newDir(const char *tident);
   XrdOssDF* newFile(const char *tident);
@@ -47,7 +46,9 @@ int     Stat(const char *dest, struct stat *, int opts=0, XrdOucEnv *eP=0);
 int     Truncate(const char *, unsigned long long, XrdOucEnv *eP=0);
 int Unlink(const char *, int Opts=0, XrdOucEnv *eP=0);
 int StatLS(XrdOucEnv &env, const char *path, char *buff, int &blen);    
+void loadConfig(const char* filename);
 private:
+std::string lustremount;
   XrdOss* nativeOss;
   XrdSysLogger* log;
 };
