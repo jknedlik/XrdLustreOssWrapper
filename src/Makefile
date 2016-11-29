@@ -8,8 +8,7 @@ LustreOss: lustreapi
 lustreapi:
 	gcc -std=c99 -I$(LUSTRE_PATH)/include $(CFLAGS) -c  lfs.c
 	ar rcs  libLust.a lfs.o 
-test:
-	gcc -std=c99 -I$(LUSTRE_PATH)/include $(CFLAGS) -c  test.c
-	gcc -o test test.o -L$(LUSTRE_PATH)/lib -llustreapi
 clean:
 	-rm *.o *.a LibXrdLustreOss.so test
+clang-format:
+	clang-format -i -style=file lfs.c LustreOss.cc LustreOss.hh qsStruct.h

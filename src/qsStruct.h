@@ -1,4 +1,4 @@
-struct qsStruct{
-    long long Total;        
+struct qsStruct {
+    long long Total;
     long long Curr;
-};                    
+};

@@ -21,36 +21,36 @@
 #ifndef __lustre_OSS_HH__
 #define __lustre_OSS_HH__
 
-#include <xrootd/XrdOss/XrdOss.hh>
+#include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
-#include <XrdOuc/XrdOucStream.hh>                                                                                                                                                                                                 
 #include <XrdSys/XrdSysLogger.hh>
-#include <xrootd/XrdVersion.hh>
 #include <stdio.h>
-    class LustreOss : public XrdOss
-{
-public:
-  virtual int    StatVS(XrdOssVSInfo *sP, const char *sname=0, int updt=0);
-  LustreOss(XrdOss* native_oss,XrdSysLogger*,const char*);
-  virtual ~LustreOss();
-  XrdOssDF* newDir(const char *tident);
-  XrdOssDF* newFile(const char *tident);
-  int   StatFS(const char *path, char *buff, int &blen, XrdOucEnv *eP);
-int Chmod(const char *pm, mode_t mode, XrdOucEnv *eP=0);
-int Create(const char* a, const char* b, mode_t c, XrdOucEnv& d, int e);
-int Init(XrdSysLogger *, const char *);
-int     Mkdir(const char * dir, mode_t mode, int mkpath=0,XrdOucEnv *eP=0);
- int Remdir(const char * dir, int Opts=0, XrdOucEnv *eP=0);
-int     Rename(const char * source, const char *dest,XrdOucEnv *eP1=0, XrdOucEnv *eP2=0);
-int     Stat(const char *dest, struct stat *, int opts=0, XrdOucEnv *eP=0);
-int     Truncate(const char *, unsigned long long, XrdOucEnv *eP=0);
-int Unlink(const char *, int Opts=0, XrdOucEnv *eP=0);
-int StatLS(XrdOucEnv &env, const char *path, char *buff, int &blen);    
-void loadConfig(const char* filename);
-private:
-std::string lustremount;
-  XrdOss* nativeOss;
-  XrdSysLogger* log;
+#include <xrootd/XrdOss/XrdOss.hh>
+#include <xrootd/XrdVersion.hh>
+class LustreOss : public XrdOss {
+  public:
+    virtual int StatVS(XrdOssVSInfo* sP, const char* sname = 0, int updt = 0);
+    LustreOss(XrdOss* native_oss, XrdSysLogger*, const char*);
+    virtual ~LustreOss();
+    XrdOssDF* newDir(const char* tident);
+    XrdOssDF* newFile(const char* tident);
+    int StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP);
+    int Chmod(const char* pm, mode_t mode, XrdOucEnv* eP = 0);
+    int Create(const char* a, const char* b, mode_t c, XrdOucEnv& d, int e);
+    int Init(XrdSysLogger*, const char*);
+    int Mkdir(const char* dir, mode_t mode, int mkpath = 0, XrdOucEnv* eP = 0);
+    int Remdir(const char* dir, int Opts = 0, XrdOucEnv* eP = 0);
+    int Rename(const char* source, const char* dest, XrdOucEnv* eP1 = 0, XrdOucEnv* eP2 = 0);
+    int Stat(const char* dest, struct stat*, int opts = 0, XrdOucEnv* eP = 0);
+    int Truncate(const char*, unsigned long long, XrdOucEnv* eP = 0);
+    int Unlink(const char*, int Opts = 0, XrdOucEnv* eP = 0);
+    int StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen);
+    void loadConfig(const char* filename);
+
+  private:
+    std::string lustremount;
+    XrdOss* nativeOss;
+    XrdSysLogger* log;
 };
 
 #endif /* __lustre_OSS_HH__ */
