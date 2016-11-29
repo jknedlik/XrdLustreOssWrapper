@@ -1,46 +1,35 @@
-#XrdProxyPrefix
-An XRootD client plug-in to forward XRootD calls over an XrootD forward proxy to its destination.
-This plug-in is considered in early development, as many methods have not yet been properly implemented. It does however work with xrdcp and simple tasks with ROOT's TNetXNGFile and will be tested in an ALICE environment. 
-Right now a full File and Filesystem implementation is provided but not tested thoroughly.
-(If you find any bugs - feel free to open an issue!)
-
+#LustreOssWrapper
+An XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with calls to the lustre quota API on a singular lustre mount.
 ## Warning
-The sources include private header files of the XrdCl source tree and needs to be kept in sync with the XRootD version source used!
+The sources include XRootD and lustre header files (especially lustre/lustreapi.h,lustre/lustre_user.h)
+and needs to be linked against the lustre api library. (-llustreapi)
 
-## Plug-in configuration
+## Compiling
+To create the plug-in shared library, run make in the "src" directory.
+For this to work, you need to set 2 environmental variables:
 
-This plug-in should be configured by using it as an Default Plugin. (Setting the XRD_PLUGIN environmental variable) It can then be configured by a configuration file specified in the XRD_DEFAULT_PLUGIN_CON environmental variable.
-Sadly there is no vanilla way to give a configuration file to a default plug-in.
+* Set *XRD_PATH* to the top level of your current xrootd installation.
+* Set *LUSTRE_PATH* to the top level of your current lustre installation(with header files). 
 
-Example configuration to delegate all I/O over a forwarding proxy:
+This will create the shared library "LibXrdLustreOss.so"
+
+## Configuration
+This plug-in is loaded by the XRootD server. In order to accomplish this, you need to indicate the serveer where the plugin lies in the server's configuration file.
 ```shell
-lib = /installdir/XrdProxy/XrdProxyPrefix.so
-proxyPrefix= myProxyHostName
-enable = true
+ofs.osslib  /installdir/XrdLustreOssWrapper/src/LibXrdLustreOss.so
+LustreOss.lustremount /path/to/lustre/mount
+
 ```
-## Configuring the target-location binding
+You also need to define the mount point of your Lustre FS with LustreOss.lustremount
 
-"Proxy" shows to the forwarding proxy you want to tunnel your connections througha point in the file system where you want to "redirect" your calls to.
-In this example a call like
-"root://dataserver.test:1094//foo/bar" 
-would be changed to 
-"root://myProxyHostName//root://datserver.test:1094//foo/bar" 
-to be forwarded through the proxy.
 
-## Install
-To compile the plug-in, you need to set the XRD_PATH environmental variable to the top level of your XRootD installation.
-
-You can compile the plug-in library with :
-```shell
-make
-```
 ## Usage
-When using this plug-in, all high level XRootD calls (xrdcp, from TNetXNGFile in ROOT, etc.) should be forwarded over the forward proxy(or proxy manager) configured in the configuration file.
-
+When using this plug-in, all high level XRootD usage statistics calls (xrdfs spaceinfo for example) will be fed lustre quota statistics of the data server's executing user's group.
 
 ## License
-The XrdProxyPrefix plug-in is distributed under the terms of the GNU Lesser Public Licence version 3 (LGPLv3)
+The XrdLustreOssWrapper plug-in is distributed under the terms of the GNU Lesser Public Licence version 3 (LGPLv3)
 
-
-
+##ToDo
+* ~~Create a way to configure the lustre mount point in the server's configuration file~~
+* Create a simple CMake setup that 
 
