@@ -53,8 +53,8 @@ void LustreOss::loadConfig(const char* filename) {
 int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
     char* buf = strdup(lustremount.c_str());
     struct qsStruct qs = getQuotaSpace(buf);
-    sP->Total = qs.Total;
-    sP->Usage = qs.Curr;
+    sP->Total = qs.Total*1024;
+    sP->Usage = qs.Curr*1024;
     sP->LFree = sP->Free = sP->Total - sP->Usage;
     return XrdOssOK;
 }
