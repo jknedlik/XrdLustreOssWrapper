@@ -4,10 +4,10 @@
 #include "qsStruct.h"
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
+#include <XrdVersion.hh>
 #include <fcntl.h>
 #include <stdexcept>
 #include <sys/quota.h>
-#include <xrootd/XrdVersion.hh>
 
 extern "C" {
 XrdOss* XrdOssGetStorageSystem(XrdOss* native_oss, XrdSysLogger* Logger, const char* config_fn,

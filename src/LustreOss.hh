@@ -21,12 +21,12 @@
 #ifndef __lustre_OSS_HH__
 #define __lustre_OSS_HH__
 
+#include <XrdOss/XrdOss.hh>
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
 #include <XrdSys/XrdSysLogger.hh>
+#include <XrdVersion.hh>
 #include <stdio.h>
-#include <xrootd/XrdOss/XrdOss.hh>
-#include <xrootd/XrdVersion.hh>
 class LustreOss : public XrdOss {
   public:
     // We just use the base implementation via nativeOss for all functions defined in this header
