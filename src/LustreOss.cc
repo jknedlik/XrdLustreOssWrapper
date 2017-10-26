@@ -1,5 +1,5 @@
 #define __METHOD_NAME__ methodName(__PRETTY_FUNCTION__)
-#define DEBUG(a) std::cout << "[DEBUG]" << a << std::endl;
+#define DEBUG(a) std::cerr << "[DEBUG]" << a << std::endl;
 #include "LustreOss.hh"
 #include "qsStruct.h"
 #include <XrdOuc/XrdOucStream.hh>
@@ -53,8 +53,8 @@ void LustreOss::loadConfig(const char* filename) {
 int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
     char* buf = strdup(lustremount.c_str());
     struct qsStruct qs = getQuotaSpace(buf);
-    sP->Total = qs.Total*1024;
-    sP->Usage = qs.Curr*1024;
+    sP->Total = qs.Total * 1024;
+    sP->Usage = qs.Curr * 1024;
     sP->LFree = sP->Free = sP->Total - sP->Usage;
     return XrdOssOK;
 }
