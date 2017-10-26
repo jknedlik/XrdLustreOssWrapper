@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <sys/quota.h>
 #include <xrootd/XrdVersion.hh>
+
 extern "C" {
 XrdOss* XrdOssGetStorageSystem(XrdOss* native_oss, XrdSysLogger* Logger, const char* config_fn,
                                const char* parms) {
@@ -26,7 +27,6 @@ LustreOss::LustreOss(XrdOss* native_oss, XrdSysLogger* logger, const char* confi
 }
 
 LustreOss::~LustreOss() {}
-
 void LustreOss::loadConfig(const char* filename) {
 
     XrdOucStream Config;
@@ -58,33 +58,7 @@ int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
     sP->LFree = sP->Free = sP->Total - sP->Usage;
     return XrdOssOK;
 }
-XrdOssDF* LustreOss::newDir(const char* tident) { return nativeOss->newDir(tident); }
-XrdOssDF* LustreOss::newFile(const char* tident) { return nativeOss->newFile(tident); }
-int LustreOss::Chmod(const char* pm, mode_t mode, XrdOucEnv* eP) {
-    return nativeOss->Chmod(pm, mode, eP);
-}
-int LustreOss::Create(const char* a, const char* b, mode_t c, XrdOucEnv& d, int e) {
-    return nativeOss->Create(a, b, c, d, e);
-}
-int LustreOss::Init(XrdSysLogger* xsl, const char* n) { return nativeOss->Init(xsl, n); }
-int LustreOss::Mkdir(const char* dir, mode_t mode, int mkpath, XrdOucEnv* eP) {
-    return nativeOss->Mkdir(dir, mode, mkpath, eP);
-}
-int LustreOss::Remdir(const char* dir, int Opts, XrdOucEnv* eP) {
-    return nativeOss->Remdir(dir, Opts, eP);
-}
-int LustreOss::Rename(const char* source, const char* dest, XrdOucEnv* eP1, XrdOucEnv* eP2) {
-    return nativeOss->Rename(source, dest, eP1, eP2);
-}
-int LustreOss::Stat(const char* dest, struct stat* stats, int opts, XrdOucEnv* eP) {
-    return nativeOss->Stat(dest, stats, opts, eP);
-}
-int LustreOss::Truncate(const char* path, unsigned long long b, XrdOucEnv* eP) {
-    return nativeOss->Truncate(path, b, eP);
-}
-int LustreOss::Unlink(const char* path, int Opts, XrdOucEnv* eP) {
-    return nativeOss->Unlink(path, Opts, eP);
-}
+
 int LustreOss::StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP) {
     XrdOssVSInfo sP;
     int rc = StatVS(&sP, 0, 0);

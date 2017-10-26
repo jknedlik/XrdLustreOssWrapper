@@ -29,23 +29,42 @@
 #include <xrootd/XrdVersion.hh>
 class LustreOss : public XrdOss {
   public:
-    virtual int StatVS(XrdOssVSInfo* sP, const char* sname = 0, int updt = 0);
+    // We just use the base implementation via nativeOss for all functions defined in this header
+    // see XrdOss/XrdOss.hh for more descriptive signatures regarding XrdOss
     LustreOss(XrdOss* native_oss, XrdSysLogger*, const char*);
     virtual ~LustreOss();
-    XrdOssDF* newDir(const char* tident);
-    XrdOssDF* newFile(const char* tident);
-    int StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP);
-    int Chmod(const char* pm, mode_t mode, XrdOucEnv* eP = 0);
-    int Create(const char* a, const char* b, mode_t c, XrdOucEnv& d, int e);
-    int Init(XrdSysLogger*, const char*);
-    int Mkdir(const char* dir, mode_t mode, int mkpath = 0, XrdOucEnv* eP = 0);
-    int Remdir(const char* dir, int Opts = 0, XrdOucEnv* eP = 0);
-    int Rename(const char* source, const char* dest, XrdOucEnv* eP1 = 0, XrdOucEnv* eP2 = 0);
-    int Stat(const char* dest, struct stat*, int opts = 0, XrdOucEnv* eP = 0);
-    int Truncate(const char*, unsigned long long, XrdOucEnv* eP = 0);
-    int Unlink(const char*, int Opts = 0, XrdOucEnv* eP = 0);
-    int StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen);
+    XrdOssDF* newDir(const char* tident) { return nativeOss->newDir(tident); }
+    XrdOssDF* newFile(const char* tident) { return nativeOss->newFile(tident); }
+    int Chmod(const char* a, mode_t b, XrdOucEnv* c = 0) { return nativeOss->Chmod(a, b, c); }
+    int Create(const char* a, const char* b, mode_t c, XrdOucEnv& d, int e) {
+        return nativeOss->Create(a, b, c, d, e);
+    }
+    int Init(XrdSysLogger* a, const char* b) { return nativeOss->Init(a, b); }
+    int Mkdir(const char* a, mode_t b, int c = 0, XrdOucEnv* d = 0) {
+        return nativeOss->Mkdir(a, b, c, d);
+    };
+    int Reloc(const char* a, const char* b, const char* c, const char* d = 0) {
+        return nativeOss->Reloc(a, b, c, d);
+    }
+    int Remdir(const char* a, int b = 0, XrdOucEnv* c = 0) { return nativeOss->Remdir(a, b, c); };
+    int Rename(const char* a, const char* b, XrdOucEnv* c = 0, XrdOucEnv* d = 0) {
+        return nativeOss->Rename(a, b, c, d);
+    }
+    int Stat(const char* a, struct stat* b, int c = 0, XrdOucEnv* d = 0) {
+        return nativeOss->Stat(a, b, c, d);
+    };
+    int Truncate(const char* a, unsigned long long b, XrdOucEnv* c = 0) {
+        return nativeOss->Truncate(a, b, c);
+    }
+    int Unlink(const char* a, int b = 0, XrdOucEnv* c = 0) { return nativeOss->Unlink(a, b, c); }
     void loadConfig(const char* filename);
+    int StatXA(const char* a, char* b, int& c, XrdOucEnv* d = 0) {
+        return nativeOss->StatXA(a, b, c, d);
+    }
+    // We only reimplement these methods in the source file
+    virtual int StatVS(XrdOssVSInfo* sP, const char* sname = 0, int updt = 0);
+    int StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP);
+    int StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen);
 
   private:
     std::string lustremount;
