@@ -43,6 +43,10 @@ class LustreOss : public XrdOss {
     int Mkdir(const char* a, mode_t b, int c = 0, XrdOucEnv* d = 0) {
         return nativeOss->Mkdir(a, b, c, d);
     };
+    const char* Lfn2Pfn(const char* a, char* b, int c, int& d) {
+        return nativeOss->Lfn2Pfn(a, b, c, d);
+    }
+    int Lfn2Pfn(const char* a, char* b, int c) { return nativeOss->Lfn2Pfn(a, b, c); }
     int Reloc(const char* a, const char* b, const char* c, const char* d = 0) {
         return nativeOss->Reloc(a, b, c, d);
     }
@@ -60,6 +64,12 @@ class LustreOss : public XrdOss {
     void loadConfig(const char* filename);
     int StatXA(const char* a, char* b, int& c, XrdOucEnv* d = 0) {
         return nativeOss->StatXA(a, b, c, d);
+    }
+    virtual int FSctl(int a, int b, const char* c, char** d = 0) {
+        return nativeOss->FSctl(a, b, c, d);
+    }
+    virtual int StatXP(const char* a, unsigned long long& b, XrdOucEnv* c = 0) {
+        return nativeOss->StatXP(a, b, c);
     }
     // We only reimplement these methods in the source file
     virtual int StatVS(XrdOssVSInfo* sP, const char* sname = 0, int updt = 0);
