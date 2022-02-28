@@ -1,7 +1,6 @@
 #define __METHOD_NAME__ methodName(__PRETTY_FUNCTION__)
 #define DEBUG(a) std::cerr << "[DEBUG]" << a << std::endl;
 #include "LustreOss.hh"
-#include "qsStruct.h"
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
 #include <XrdVersion.hh>
