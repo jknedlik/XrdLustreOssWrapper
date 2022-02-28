@@ -61,7 +61,12 @@ void LustreOss::loadConfig(const char* filename) {
 
 int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
     char* buf = strdup(lustremount.c_str());
-    struct qsStruct qs = getQuotaSpace(buf);
+    struct qsStrcut qs;
+    if (lastChecked != decltype(lastChecked){} &&
+        (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() >= 0)
+        qs = cacheValue;
+    else
+        qs = getQuotaSpace(buf);
     sP->Total = qs.Total * 1024;
     sP->Usage = qs.Curr * 1024;
     sP->LFree = sP->Free = sP->Total - sP->Usage;
@@ -79,29 +84,14 @@ int LustreOss::StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP) {
     return XrdOssOK;
 }
 int LustreOss::StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen) {
-    // lambda to get lustre value
-    auto getLustreQuota = [&]() {
-        static const char* Resp = "oss.cgroup=%s&oss.space=%lld&oss.free=%lld"
-                                  "&oss.maxf=%lld&oss.used=%lld&oss.quota=%lld";
-        XrdOssVSInfo sP;
-        int rc = StatVS(&sP, 0, 0);
-        if (rc)
-            return rc;
+    static const char* Resp = "oss.cgroup=%s&oss.space=%lld&oss.free=%lld"
+                              "&oss.maxf=%lld&oss.used=%lld&oss.quota=%lld";
+    XrdOssVSInfo sP;
+    int rc = StatVS(&sP, 0, 0);
+    if (rc)
+        return rc;
 
-        blen =
-          snprintf(buff, blen, Resp, "public", sP.Total, sP.Free, sP.LFree, sP.Usage, sP.Quota);
-        cacheValue{ buff, blen };
-        lastChecked = std::chrono::system_clock::now();
-    };
-
-    if (lastChecked != decltype(lastChecked){} &&
-        (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() >= 0) {
-        memcpy(buff, cacheValue.data(), std::min(blen, cacheValue.size()));
-        std::cerr << "using cached value" << std::endl;
-    } else {
-        getLustreQuota();
-        std::cerr << "getting new value" << std::endl;
-    }
+    blen = snprintf(buff, blen, Resp, "public", sP.Total, sP.Free, sP.LFree, sP.Usage, sP.Quota);
 
     return XrdOssOK;
 }

@@ -21,6 +21,7 @@
 #ifndef __lustre_OSS_HH__
 #define __lustre_OSS_HH__
 
+#include "qsStruct.h"
 #include <XrdOss/XrdOss.hh>
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
@@ -82,7 +83,7 @@ class LustreOss : public XrdOss {
     // cache members
     std::chrono::seconds cacheTime{ 0 };
     std::chrono::system_clock::time_point lastChecked;
-    std::string cacheValue;
+    qsStruct cacheValue;
     // Xrd members
     XrdOss* nativeOss;
     XrdSysLogger* log;
