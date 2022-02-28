@@ -5,6 +5,7 @@
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
 #include <XrdVersion.hh>
+#include <chrono>
 #include <fcntl.h>
 #include <stdexcept>
 #include <sys/quota.h>
@@ -44,9 +45,17 @@ void LustreOss::loadConfig(const char* filename) {
             lustremount = std::string(Config.GetWord());
             break;
         }
+        if (strcmp(var, "LustreOss.cachetime") == 0) {
+            var += 19;
+            cacheTime = std::chrono::seconds(std::atol(Config.GetWord()));
+            lastChecked = decltype(lastChecked){};
+            break;
+        }
     }
     if (lustremount.empty())
         throw std::runtime_error("LustreOss.lustremount not set in configuration file");
+    if (cacheTime.count() < 0)
+        throw std::invalid_argument("LustreOss.cachetime set incorrectly (0,max<long>)");
     Config.Close();
 }
 
@@ -70,14 +79,30 @@ int LustreOss::StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP) {
     return XrdOssOK;
 }
 int LustreOss::StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen) {
-    static const char* Resp = "oss.cgroup=%s&oss.space=%lld&oss.free=%lld"
-                              "&oss.maxf=%lld&oss.used=%lld&oss.quota=%lld";
-    XrdOssVSInfo sP;
-    int rc = StatVS(&sP, 0, 0);
-    if (rc)
-        return rc;
+    // lambda to get lustre value
+    auto getLustreQuota = [&]() {
+        static const char* Resp = "oss.cgroup=%s&oss.space=%lld&oss.free=%lld"
+                                  "&oss.maxf=%lld&oss.used=%lld&oss.quota=%lld";
+        XrdOssVSInfo sP;
+        int rc = StatVS(&sP, 0, 0);
+        if (rc)
+            return rc;
 
-    blen = snprintf(buff, blen, Resp, "public", sP.Total, sP.Free, sP.LFree, sP.Usage, sP.Quota);
+        blen =
+          snprintf(buff, blen, Resp, "public", sP.Total, sP.Free, sP.LFree, sP.Usage, sP.Quota);
+        cacheValue{ buff, blen };
+        lastChecked = std::chrono::system_clock::now();
+    };
+
+    if (lastChecked != decltype(lastChecked){} &&
+        (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() >= 0) {
+        memcpy(buff, cacheValue.data(), std::min(blen, cacheValue.size()));
+        std::cerr << "using cached value" << std::endl;
+    } else {
+        getLustreQuota();
+        std::cerr << "getting new value" << std::endl;
+    }
+
     return XrdOssOK;
 }
 XrdVERSIONINFO(XrdOssGetStorageSystem, LustreOss);
