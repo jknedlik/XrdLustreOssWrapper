@@ -47,6 +47,7 @@ void LustreOss::loadConfig(const char* filename) {
         if (strcmp(var, "LustreOss.cachetime") == 0) {
             var += 19;
             cacheTime = std::chrono::seconds(std::atol(Config.GetWord()));
+            std::cerr << "LustreOss duration:" << cacheTime << std::endl;
             lastChecked = decltype(lastChecked){};
             break;
         }
