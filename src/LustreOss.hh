@@ -21,11 +21,13 @@
 #ifndef __lustre_OSS_HH__
 #define __lustre_OSS_HH__
 
+#include "qsStruct.h"
 #include <XrdOss/XrdOss.hh>
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
 #include <XrdSys/XrdSysLogger.hh>
 #include <XrdVersion.hh>
+#include <chrono>
 #include <stdio.h>
 class LustreOss : public XrdOss {
   public:
@@ -78,6 +80,11 @@ class LustreOss : public XrdOss {
 
   private:
     std::string lustremount;
+    // cache members
+    std::chrono::seconds cacheTime{ 0 };
+    std::chrono::system_clock::time_point lastChecked{};
+    qsStruct cacheValue;
+    // Xrd members
     XrdOss* nativeOss;
     XrdSysLogger* log;
 };

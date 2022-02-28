@@ -1,10 +1,10 @@
 #define __METHOD_NAME__ methodName(__PRETTY_FUNCTION__)
 #define DEBUG(a) std::cerr << "[DEBUG]" << a << std::endl;
 #include "LustreOss.hh"
-#include "qsStruct.h"
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
 #include <XrdVersion.hh>
+#include <chrono>
 #include <fcntl.h>
 #include <stdexcept>
 #include <sys/quota.h>
@@ -42,19 +42,29 @@ void LustreOss::loadConfig(const char* filename) {
         if (strcmp(var, "LustreOss.lustremount") == 0) {
             var += 21;
             lustremount = std::string(Config.GetWord());
-            break;
+        }
+        if (strcmp(var, "LustreOss.cachetime") == 0) {
+            var += 19;
+            cacheTime = std::chrono::seconds(std::atol(Config.GetWord()));
+            lastChecked = decltype(lastChecked){};
         }
     }
     if (lustremount.empty())
         throw std::runtime_error("LustreOss.lustremount not set in configuration file");
+    if (cacheTime.count() < 0)
+        throw std::invalid_argument("LustreOss.cachetime set incorrectly (0,max<long>)");
     Config.Close();
 }
 
 int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
     char* buf = strdup(lustremount.c_str());
-    struct qsStruct qs = getQuotaSpace(buf);
-    sP->Total = qs.Total * 1024;
-    sP->Usage = qs.Curr * 1024;
+    if (lastChecked == decltype(lastChecked){} ||
+        (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() < 0) {
+        cacheValue = getQuotaSpace(buf);
+        lastChecked = std::chrono::system_clock::now();
+    }
+    sP->Total = cacheValue.Total * 1024;
+    sP->Usage = cacheValue.Curr * 1024;
     sP->LFree = sP->Free = sP->Total - sP->Usage;
     return XrdOssOK;
 }
