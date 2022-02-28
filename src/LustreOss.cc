@@ -46,7 +46,6 @@ void LustreOss::loadConfig(const char* filename) {
         if (strcmp(var, "LustreOss.cachetime") == 0) {
             var += 19;
             cacheTime = std::chrono::seconds(std::atol(Config.GetWord()));
-            std::cout << "LustreOss duration:" << cacheTime.count() << std::endl;
             lastChecked = decltype(lastChecked){};
         }
     }
@@ -63,8 +62,6 @@ int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
         (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() < 0) {
         cacheValue = getQuotaSpace(buf);
         lastChecked = std::chrono::system_clock::now();
-    } else {
-        std::cout << "Using cached statvs value" << std::endl;
     }
     sP->Total = cacheValue.Total * 1024;
     sP->Usage = cacheValue.Curr * 1024;
