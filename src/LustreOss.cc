@@ -42,14 +42,12 @@ void LustreOss::loadConfig(const char* filename) {
         if (strcmp(var, "LustreOss.lustremount") == 0) {
             var += 21;
             lustremount = std::string(Config.GetWord());
-            break;
         }
         if (strcmp(var, "LustreOss.cachetime") == 0) {
             var += 19;
             cacheTime = std::chrono::seconds(std::atol(Config.GetWord()));
             std::cout << "LustreOss duration:" << cacheTime.count() << std::endl;
             lastChecked = decltype(lastChecked){};
-            break;
         }
     }
     if (lustremount.empty())
