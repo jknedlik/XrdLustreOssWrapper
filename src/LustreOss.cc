@@ -91,7 +91,6 @@ int LustreOss::StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen) {
         return rc;
 
     blen = snprintf(buff, blen, Resp, "public", sP.Total, sP.Free, sP.LFree, sP.Usage, sP.Quota);
-
     return XrdOssOK;
 }
 XrdVERSIONINFO(XrdOssGetStorageSystem, LustreOss);

@@ -82,7 +82,7 @@ class LustreOss : public XrdOss {
     std::string lustremount;
     // cache members
     std::chrono::seconds cacheTime{ 0 };
-    std::chrono::system_clock::time_point lastChecked;
+    std::chrono::system_clock::time_point lastChecked{};
     qsStruct cacheValue;
     // Xrd members
     XrdOss* nativeOss;
