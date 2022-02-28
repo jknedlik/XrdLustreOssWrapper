@@ -61,14 +61,13 @@ void LustreOss::loadConfig(const char* filename) {
 
 int LustreOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
     char* buf = strdup(lustremount.c_str());
-    struct qsStrcut qs;
-    if (lastChecked != decltype(lastChecked){} &&
-        (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() >= 0)
-        qs = cacheValue;
-    else
-        qs = getQuotaSpace(buf);
-    sP->Total = qs.Total * 1024;
-    sP->Usage = qs.Curr * 1024;
+    if (lastChecked == decltype(lastChecked){} ||
+        (cacheTime - (std::chrono::system_clock::now() - lastChecked)).count() < 0) {
+        cacheValue = getQuotaSpace(buf);
+        lastChecked = std::chrono::system_clock::now();
+    }
+    sP->Total = cacheValue.Total * 1024;
+    sP->Usage = cacheValue.Curr * 1024;
     sP->LFree = sP->Free = sP->Total - sP->Usage;
     return XrdOssOK;
 }
