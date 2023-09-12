@@ -1,6 +1,6 @@
-#LustreOssWrapper
+# LustreOssWrapper
 
-An XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with calls to the lustre quota API on a singular lustre mount.
+A XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with calls to the lustre quota API on a singular lustre mount.
 
 ## Warning
 
@@ -23,7 +23,7 @@ Use the Containerfile with podman to compile the library and package it into a r
 
 ```
 podman build -t xrdlustreoss .
-podman podman run -v rpm:/rpm -it xrdlustreoss
+podman run -v rpm:/rpm -it xrdlustreoss
 ```
 
 The el8 rpm will then be stored in the rpm directory.
