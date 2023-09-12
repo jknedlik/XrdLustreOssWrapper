@@ -31,6 +31,6 @@ RUN mkdir -p BUILD SOURCES SPECS RPMS SRPMS XrdLustreOss-0.9
 RUN mv /root/src/LibXrdLustreOss.so XrdLustreOss-0.9
 RUN tar -cf SOURCES/XrdLustreOss-0.9.tar.gz XrdLustreOss-0.9
 WORKDIR /root/
-COPY rpm/XrdLustreOss.spec /root/rpmbuild/SPECS/
+COPY XrdLustreOss.spec /root/rpmbuild/SPECS/
 RUN rpmbuild  -bb rpmbuild/SPECS/XrdLustreOss.spec
 
