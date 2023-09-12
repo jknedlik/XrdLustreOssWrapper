@@ -17,6 +17,17 @@ For this to work, you need to set 2 environmental variables:
 
 This will create the shared library "LibXrdLustreOss.so"
 
+## Rocky8 RPM build container
+
+Use the Containerfile with podman to compile the library and package it into a rpm using:
+
+```
+podman build -t xrdlustreoss .
+podman podman run -v rpm:/rpm -it xrdlustreoss
+```
+
+The el8 rpm will then be stored in the rpm directory.
+
 ## Configuration
 
 This plug-in is loaded by the XRootD server. In order to accomplish this, you need to indicate the server where the plugin lies in the server's configuration file. Configure your lustre mountpoint and the number of seconds until the cache is invalidated.

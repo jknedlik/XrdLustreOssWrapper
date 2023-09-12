@@ -34,3 +34,5 @@ WORKDIR /root/
 COPY XrdLustreOss.spec /root/rpmbuild/SPECS/
 RUN rpmbuild  -bb rpmbuild/SPECS/XrdLustreOss.spec
 
+RUN mkdir /rpm
+ENTRYPOINT ["cp","/root/rpmbuild/RPMS/x86_64/XrdLustreOss-0.9-1.el8.x86_64.rpm","/rpm"]
